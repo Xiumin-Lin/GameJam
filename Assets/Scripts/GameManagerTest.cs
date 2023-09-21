@@ -27,7 +27,7 @@ public class GameManagerTest : MonoBehaviour
     [SerializeField] private GameObject lineColliderE;
     [SerializeField] private GameObject lineColliderR;
 
-    private float score;
+    private int score;
     private float multiplicateurVitesse;
     private int nbLives;
 
@@ -171,27 +171,21 @@ public class GameManagerTest : MonoBehaviour
         }
 
         Debug.Log("Multiplicateur : " + multiplicateurVitesse);*/
+    }
+    
+    public void IncreaseScore()
+    {
+        score++;
+        scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = score.ToString();
+    }
 
-
-        /// POUR AUGMENTER LE SCORE 
-        /*score++;
-        scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = score.ToString();*/
-
-        /// POUR DECREMENTER LE NOMBRE DE VIES
-        //On a besoin de la méthode de collision => si pas de collision au moment de l'appui, 1 vie en moins
-
-        if (Input.GetKeyDown(KeyCode.Space))
+    public void DecreaseHP()
+    {
+        nbLives--;
+        if(nbLives > 0)
         {
-            if(nbLives > 0)
-            {
-                nbLives--;
-                lives.transform.GetChild(nbLives).gameObject.SetActive(false);
-                if (nbLives == 0)
-                {
-                    GameOver();
-                }
-            }
-        }
+            lives.transform.GetChild(nbLives).gameObject.SetActive(false);
+        } else GameOver();
     }
 
     private IEnumerator DeactivateLineCollider(GameObject line)
