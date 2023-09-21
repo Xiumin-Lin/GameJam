@@ -24,7 +24,7 @@ public class GameManagerTest : MonoBehaviour
 
     [SerializeField] private GameObject lives;
 
-    private float score;
+    private int score;
     private float multiplicateurVitesse;
     private int nbLives;
 
@@ -188,5 +188,10 @@ public class GameManagerTest : MonoBehaviour
     void GameOver()
     {
         SceneManager.LoadScene("GameOver");
+    }
+
+    public int GetScore()
+    {
+        return score;
     }
 }
