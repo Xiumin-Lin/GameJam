@@ -1,26 +1,46 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Melanchall.DryWetMidi.Core;
+using Melanchall.DryWetMidi.Interaction;
 using UnityEngine;
-using TMPro;
-using NAudio;
-using NAudio.Wave;
-using NAudio.CoreAudioApi;
+using Random = UnityEngine.Random;
 
 public class GameManagerTest : MonoBehaviour
 {
     public static GameManagerTest instance;
+    
     [SerializeField] private GameObject pauseMenuUI;
     [SerializeField] private Transform scoreTMPro;
     [SerializeField] private Transform ATMPro;
     [SerializeField] private Transform ZTMPro;
     [SerializeField] private Transform ETMPro;
     [SerializeField] private Transform RTMPro;
+    
     private float score;
     private float playerVolumePercent;
     private float multiplicateurVitesse;
 
     private float timeRemaining = 2;
     private bool isVanish = false;
+    
+    [SerializeField] private GameObject tilePrefab;
+    [SerializeField] private AudioClip A;
+    [SerializeField] private AudioClip B;
+    [SerializeField] private AudioClip C;
+    [SerializeField] private AudioClip D;
+    [SerializeField] private AudioClip E;
+    [SerializeField] private AudioClip F;
+    [SerializeField] private AudioClip G;
+    
+    private AudioSource _audioSource;
+    private MidiFile _midiFile;
+
+    private Note[] _notes;
+    private Stack<GameObject> _tiles;
+    private TempoMap _tempoMap;
+    
+    [SerializeField] private GameObject spawner;
 
     void Awake()
     {
@@ -38,9 +58,65 @@ public class GameManagerTest : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
+        _audioSource = GetComponent<AudioSource>();
         
+        _midiFile = MidiFile.Read("./Assets/Resources/Audio/little_star.mid");
+        _notes = _midiFile.GetNotes().ToArray();
+        _tiles = new Stack<GameObject>();
+        _tempoMap = _midiFile.GetTempoMap();
+
+        var spawnerScript = spawner.GetComponent<Spawner>();
+        var spawnerSize = spawnerScript.GetSpawnersSize();
+        
+        foreach (var note in _midiFile.GetNotes()) // preload each note
+        {
+            GameObject go = Instantiate(tilePrefab, Vector3.zero, Quaternion.identity);
+            Tile tile = go.GetComponent<Tile>();
+            tile.SetTile(spawnerScript.GetSpawnerById(Random.Range(0, spawnerSize)), note);
+            go.SetActive(false);
+            _tiles.Push(go);
+        }
+    }
+
+    private int _index;
+
+    private void FixedUpdate()
+    {
+        if(_tiles.Count <= 0) return;
+        for (int i = _index; i < _notes.Length; i++)
+        {
+            var note = _notes[i];
+            var totalTimeInMilli = ((TimeSpan)note.TimeAs<MetricTimeSpan>(_tempoMap)).TotalSeconds;
+            // Debug.Log($"{note.NoteName} Total: {Time.time} - {totalTimeInMilli} = {totalTimeInMilli < Time.time}");
+            // var diff = Time.time - totalTimeInMilli;
+            if (totalTimeInMilli <= Time.time)
+            {
+                var tile = _tiles.Pop();
+                tile.SetActive(true);
+                Destroy(tile, 10);
+
+                char letter = note.NoteName.ToString().ToLower()[0];
+                switch (letter)
+                {
+                    case 'a': _audioSource.clip = A; break;
+                    case 'b': _audioSource.clip = B; break;
+                    case 'c': _audioSource.clip = C; break;
+                    case 'd': _audioSource.clip = D; break;
+                    case 'e': _audioSource.clip = E; break;
+                    case 'f': _audioSource.clip = F; break;
+                    case 'g': _audioSource.clip = G; break;
+                }
+                _audioSource.Play(0);
+                _index = i + 1;
+            }
+            else
+            {
+                break;
+            }
+        }
+        Debug.Log($"{Time.time} END Update {_index}");
     }
 
     // Update is called once per frame

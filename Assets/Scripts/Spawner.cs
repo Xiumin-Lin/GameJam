@@ -28,6 +28,16 @@ public class Spawner : MonoBehaviour
         }
     }
 
+    public int GetSpawnersSize()
+    {
+        return spawners.Length;
+    }
+
+    public GameObject GetSpawnerById(int id)
+    {
+        return spawners[id];
+    }
+
     // Update is called once per frame
     void Update()
     {

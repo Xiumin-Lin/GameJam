@@ -1,19 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
+using Melanchall.DryWetMidi.Interaction;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    private float vitesse = 0.5f;
-    [SerializeField] private GameObject spawn;
-    // Start is called before the first frame update
-    void Start()
+    public enum PianoNote
     {
-        Vector2 spawn_pos = spawn.transform.position; // Récupère la position locale de l'objet
+        A, B, C, D, E, F, G
+    }
+    
+    [SerializeField] private Note _note;
+    private PianoNote _code;
+    private float vitesse = 3f;
 
-        Vector2 new_position = new Vector2(spawn_pos.x, spawn_pos.y);
-        this.transform.position = new_position;
+    public void SetTile(GameObject spawn, Note note)
+    {
+        _note = note;
+        Vector2 spawnPos = spawn.transform.position; // Recupere la position locale de l'objet
+        this.transform.position = new Vector2(spawnPos.x, spawnPos.y);
     }
 
     // Update is called once per frame
