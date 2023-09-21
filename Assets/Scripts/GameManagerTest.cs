@@ -25,19 +25,10 @@ public class GameManagerTest : MonoBehaviour
     private bool isVanish = false;
     
     [SerializeField] private GameObject tilePrefab;
-    [SerializeField] private AudioClip A;
-    [SerializeField] private AudioClip B;
-    [SerializeField] private AudioClip C;
-    [SerializeField] private AudioClip D;
-    [SerializeField] private AudioClip E;
-    [SerializeField] private AudioClip F;
-    [SerializeField] private AudioClip G;
-    
-    private AudioSource _audioSource;
     private MidiFile _midiFile;
 
     private Note[] _notes;
-    private Stack<GameObject> _tiles;
+    private List<GameObject> _tiles;
     private TempoMap _tempoMap;
     
     [SerializeField] private GameObject spawner;
@@ -60,14 +51,12 @@ public class GameManagerTest : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        _audioSource = GetComponent<AudioSource>();
-        
         _midiFile = MidiFile.Read("./Assets/Resources/Audio/little_star.mid");
         _notes = _midiFile.GetNotes().ToArray();
-        _tiles = new Stack<GameObject>();
+        _tiles = new List<GameObject>();
         _tempoMap = _midiFile.GetTempoMap();
 
-        var spawnerScript = spawner.GetComponent<Spawner>();
+        var spawnerScript = spawner.GetComponent<SpawnManager>();
         var spawnerSize = spawnerScript.GetSpawnersSize();
         
         foreach (var note in _midiFile.GetNotes()) // preload each note
@@ -76,7 +65,7 @@ public class GameManagerTest : MonoBehaviour
             Tile tile = go.GetComponent<Tile>();
             tile.SetTile(spawnerScript.GetSpawnerById(Random.Range(0, spawnerSize)), note);
             go.SetActive(false);
-            _tiles.Push(go);
+            _tiles.Add(go);
         }
     }
 
@@ -90,25 +79,10 @@ public class GameManagerTest : MonoBehaviour
             var note = _notes[i];
             var totalTimeInMilli = ((TimeSpan)note.TimeAs<MetricTimeSpan>(_tempoMap)).TotalSeconds;
             // Debug.Log($"{note.NoteName} Total: {Time.time} - {totalTimeInMilli} = {totalTimeInMilli < Time.time}");
-            // var diff = Time.time - totalTimeInMilli;
             if (totalTimeInMilli <= Time.time)
             {
-                var tile = _tiles.Pop();
+                var tile = _tiles[i];
                 tile.SetActive(true);
-                Destroy(tile, 10);
-
-                char letter = note.NoteName.ToString().ToLower()[0];
-                switch (letter)
-                {
-                    case 'a': _audioSource.clip = A; break;
-                    case 'b': _audioSource.clip = B; break;
-                    case 'c': _audioSource.clip = C; break;
-                    case 'd': _audioSource.clip = D; break;
-                    case 'e': _audioSource.clip = E; break;
-                    case 'f': _audioSource.clip = F; break;
-                    case 'g': _audioSource.clip = G; break;
-                }
-                _audioSource.Play(0);
                 _index = i + 1;
             }
             else
@@ -116,12 +90,36 @@ public class GameManagerTest : MonoBehaviour
                 break;
             }
         }
-        Debug.Log($"{Time.time} END Update {_index}");
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if(!PauseMenuUI.instance.IsPaused())
+            {
+                PauseMenuUI.instance.ResumeGame();
+            }
+        }
+        
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.Q))
+        {
+            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.A);
+        }
+        if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.W))
+        {
+            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.B);
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.C);
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.D);
+        }
+        
         if(!isVanish)
         {
             if (timeRemaining > 0)
@@ -140,14 +138,6 @@ public class GameManagerTest : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if(!PauseMenuUI.instance.IsPaused())
-            {
-                PauseMenuUI.instance.ResumeGame();
-            }
-        }
-
         //Multiplicateur de vitesse
         int volumePercent = PlayerPrefs.GetInt("volumeSliderPercent");
         multiplicateurVitesse = 1f;
@@ -155,7 +145,7 @@ public class GameManagerTest : MonoBehaviour
         {
             multiplicateurVitesse = 1f - ((50f - (float)volumePercent) * 2) / 100;   // Compris entre 0 et 1
         }
-        Debug.Log("Multiplicateur : " + multiplicateurVitesse);
+        // Debug.Log("Multiplicateur : " + multiplicateurVitesse);
 
         //Pour augmenter le score
         /*score++;
