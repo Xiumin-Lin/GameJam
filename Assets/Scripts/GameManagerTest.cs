@@ -15,6 +15,9 @@ public class GameManagerTest : MonoBehaviour
     [SerializeField] private Transform ZTMPro;
     [SerializeField] private Transform ETMPro;
     [SerializeField] private Transform RTMPro;
+    [SerializeField] private GameObject TileTest;
+    [SerializeField] private GameObject[] CollisionsLines;
+
     private float score;
     private float playerVolumePercent;
     private float multiplicateurVitesse;
@@ -84,6 +87,10 @@ public class GameManagerTest : MonoBehaviour
         //Pour augmenter le score
         /*score++;
         scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = score.ToString();*/
+
+
+        // COllision tiles /lines
+
     }
 
     void CheckPlayerVolume()
@@ -100,4 +107,6 @@ public class GameManagerTest : MonoBehaviour
             scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = playerVolumePercent.ToString();
         }*/
     }
+
+
 }

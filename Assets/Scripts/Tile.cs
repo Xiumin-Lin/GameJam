@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    private float vitesse = 0.5f;
+    private float vitesse = 2f;
     [SerializeField] private GameObject spawn;
     // Start is called before the first frame update
     void Start()
@@ -20,5 +20,15 @@ public class Tile : MonoBehaviour
     void Update()
     {
         transform.Translate(-Vector2.up * vitesse * Time.deltaTime);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Collision Detected");
+        if (collision.gameObject.CompareTag("LineA"))
+        {
+            Destroy(this.gameObject);
+            Debug.Log("COLLIDED");
+        }
     }
 }
