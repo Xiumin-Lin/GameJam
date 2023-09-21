@@ -11,6 +11,11 @@ public class Spawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Vector2 middle_up_screen = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height, 0));
+        Vector2 spawner_pos = new Vector2(middle_up_screen.x, middle_up_screen.y);
+        this.transform.position = spawner_pos;
+
+        // Placement des spawns
         float width = rigth_line.transform.position.x - left_line.transform.position.x;
         int i = 0;
         float pas = width / 4;
