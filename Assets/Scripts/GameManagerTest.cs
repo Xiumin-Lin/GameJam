@@ -23,6 +23,11 @@ public class GameManagerTest : MonoBehaviour
     [SerializeField] private Transform RTMPro;
 
     [SerializeField] private GameObject lives;
+    
+    [SerializeField] private GameObject lineA;
+    [SerializeField] private GameObject lineZ;
+    [SerializeField] private GameObject lineE;
+    [SerializeField] private GameObject lineR;
 
     private float score;
     private float multiplicateurVitesse;
@@ -110,19 +115,19 @@ public class GameManagerTest : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.Q))
         {
-            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.A);
+            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.A1);
         }
         if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.W))
         {
-            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.B);
+            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.B1);
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.C);
+            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.C1);
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.D);
+            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.D1);
         }
         
         if(!isVanish)
