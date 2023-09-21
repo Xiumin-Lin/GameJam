@@ -10,10 +10,9 @@ public class Tile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Vector2 spawn_pos = spawn.transform.position; // Récupère la position locale de l'objet
+        Vector2 spawn_pos = spawn.transform.position; // RÃ©cupÃ¨re la position locale de l'objet
 
-        Vector2 new_position = new Vector2(spawn_pos.x,
-                                           spawn_pos.y);
+        Vector2 new_position = new Vector2(spawn_pos.x, spawn_pos.y);
         this.transform.position = new_position;
     }
 
