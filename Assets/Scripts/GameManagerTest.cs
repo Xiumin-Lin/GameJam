@@ -5,6 +5,7 @@ using TMPro;
 using NAudio;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
+using UnityEngine.SceneManagement;
 
 public class GameManagerTest : MonoBehaviour
 {
@@ -15,9 +16,10 @@ public class GameManagerTest : MonoBehaviour
     [SerializeField] private Transform ZTMPro;
     [SerializeField] private Transform ETMPro;
     [SerializeField] private Transform RTMPro;
+    [SerializeField] private GameObject lives;
     private float score;
-    private float playerVolumePercent;
     private float multiplicateurVitesse;
+    private int nbLives;
 
     private float timeRemaining = 2;
     private bool isVanish = false;
@@ -29,12 +31,10 @@ public class GameManagerTest : MonoBehaviour
         pauseMenuUI.SetActive(true);
         pauseMenuUI.SetActive(false);
 
+        nbLives = 3;
+
         score = 0;
         scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = "0";
-
-        playerVolumePercent = 0;
-        scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = "0";
-        CheckPlayerVolume();
     }
 
     // Start is called before the first frame update
@@ -64,7 +64,7 @@ public class GameManagerTest : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
         {
             if(!PauseMenuUI.instance.IsPaused())
             {
@@ -74,30 +74,37 @@ public class GameManagerTest : MonoBehaviour
 
         //Multiplicateur de vitesse
         int volumePercent = PlayerPrefs.GetInt("volumeSliderPercent");
-        multiplicateurVitesse = 1f;
-        if (volumePercent != 50)
+        /// A MODIFIER SELON LA VITESSE DE BASE DE LA MUSIQUE
+        /*multiplicateurVitesse = 1f;
+        if (volumePercent > 80)
         {
-            multiplicateurVitesse = 1f - ((50f - (float)volumePercent) * 2) / 100;   // Compris entre 0 et 1
+            multiplicateurVitesse = 1f + ((20f - (float)volumePercent) * 2) / 100;   // Compris entre 0 et 1
         }
-        Debug.Log("Multiplicateur : " + multiplicateurVitesse);
+        Debug.Log("Multiplicateur : " + multiplicateurVitesse);*/
 
-        //Pour augmenter le score
+        /// POUR AUGMENTER LE SCORE 
         /*score++;
         scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = score.ToString();*/
+
+        /// POUR DECREMENTER LE NOMBRE DE VIES
+        //On a besoin de la méthode de collision => si pas de collision au moment de l'appui, 1 vie en moins
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if(nbLives > 0)
+            {
+                nbLives--;
+                lives.transform.GetChild(nbLives).gameObject.SetActive(false);
+                if (nbLives == 0)
+                {
+                    GameOver();
+                }
+            }
+        }
     }
 
-    void CheckPlayerVolume()
+    void GameOver()
     {
-        /*var devEnum = new MMDeviceEnumerator();
-        var defaultDevice = devEnum.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);*/
-        /*var enumerator = new MMDeviceEnumerator();
-        var defaultDevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console);
-        var volume = defaultDevice.AudioEndpointVolume;
-        float masterVolumePercent = volume.MasterVolumeLevelScalar * 100;
-        if (playerVolumePercent != masterVolumePercent)
-        {
-            playerVolumePercent = masterVolumePercent;
-            scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = playerVolumePercent.ToString();
-        }*/
+        SceneManager.LoadScene("GameOver");
     }
 }
