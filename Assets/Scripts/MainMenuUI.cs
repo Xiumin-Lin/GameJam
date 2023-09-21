@@ -13,6 +13,11 @@ public class MainMenuUI : MonoBehaviour
     {
         playButton.onClick.AddListener(ChangeScene);
         quitButton.onClick.AddListener(QuitGame);
+
+        // PlayerPrefs son
+        PlayerPrefs.SetFloat("volume", -30f);
+        PlayerPrefs.SetInt("volumeSliderPercent", 50);
+
     }
 
     // Start is called before the first frame update
