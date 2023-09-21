@@ -29,7 +29,6 @@ public class AudioManager : MonoBehaviour
 
     public void PlayPianoAudio(Tile.PianoNote note)
     {
-        Debug.Log($"Play note {note}");
         switch (note)
         {
             case Tile.PianoNote.A: _audioSource.clip = A1; break;
