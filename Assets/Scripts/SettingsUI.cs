@@ -31,7 +31,7 @@ public class SettingsUI : MonoBehaviour
 
     public void SetVolume(float volume)
     {
-        int volumeSliderPercent = (int) (volume - volumeSlider.minValue);
+        int volumeSliderPercent = (int) (volume - volumeSlider.minValue) * 2;
         volumePercentageTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = volumeSliderPercent.ToString() + "%";
         audioMixer.SetFloat("volume", volume);
         PlayerPrefs.SetFloat("volume", volume);
