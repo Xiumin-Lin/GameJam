@@ -14,7 +14,7 @@ public class Tile : MonoBehaviour
     [SerializeField] private Note _note;
     private PianoNote _code;
     private float vitesse = 3f;
-
+    private bool isCheating = false;
     public void SetTile(GameObject spawn, Note note)
     {
         _note = note;
@@ -25,6 +25,8 @@ public class Tile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(-Vector2.up * vitesse * Time.deltaTime);
+        var currentSpeed = vitesse;
+        if (isCheating) currentSpeed /= 2;
+        transform.Translate(-Vector2.up * currentSpeed * Time.deltaTime);
     }
 }
