@@ -17,7 +17,7 @@ public class GameManagerTest : MonoBehaviour
         pauseMenuUI.SetActive(true);
         pauseMenuUI.SetActive(false);
 
-        score = 0;
+        this.score = 0;
         scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = "0";
     }
 
