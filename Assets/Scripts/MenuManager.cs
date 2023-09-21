@@ -1,131 +1,140 @@
-﻿
+﻿using System.Collections;
+using System.Collections.Generic;
+using SDD.Events;
+using UnityEngine;
+
 namespace STUDENT_NAME
 {
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
-	using UnityEngine;
-	using SDD.Events;
+    public class MenuManager : Manager<MenuManager>
+    {
+        #region Manager implementation
 
-	public class MenuManager : Manager<MenuManager>
-	{
+        protected override IEnumerator InitCoroutine()
+        {
+            yield break;
+        }
 
-		[Header("MenuManager")]
+        #endregion
 
-		#region Panels
-		[Header("Panels")]
-		[SerializeField] GameObject m_PanelMainMenu;
-		[SerializeField] GameObject m_PanelInGameMenu;
-		[SerializeField] GameObject m_PanelGameOver;
+        [Header("MenuManager")]
 
-		List<GameObject> m_AllPanels;
-		#endregion
+        #region Panels
 
-		#region Events' subscription
-		public override void SubscribeEvents()
-		{
-			base.SubscribeEvents();
-		}
+        [Header("Panels")]
+        [SerializeField]
+        private GameObject m_PanelMainMenu;
 
-		public override void UnsubscribeEvents()
-		{
-			base.UnsubscribeEvents();
-		}
-		#endregion
+        [SerializeField] private GameObject m_PanelInGameMenu;
+        [SerializeField] private GameObject m_PanelGameOver;
 
-		#region Manager implementation
-		protected override IEnumerator InitCoroutine()
-		{
-			yield break;
-		}
-		#endregion
+        private List<GameObject> m_AllPanels;
 
-		#region Monobehaviour lifecycle
-		protected override void Awake()
-		{
-			base.Awake();
-			RegisterPanels();
-		}
+        #endregion
 
-		private void Update()
-		{
-			if (Input.GetButtonDown("Cancel"))
-			{
-				EscapeButtonHasBeenClicked();
-			}
-		}
-		#endregion
+        #region Events' subscription
 
-		#region Panel Methods
-		void RegisterPanels()
-		{
-			m_AllPanels = new List<GameObject>();
-			m_AllPanels.Add(m_PanelMainMenu);
-			m_AllPanels.Add(m_PanelInGameMenu);
-			m_AllPanels.Add(m_PanelGameOver);
-		}
+        public override void SubscribeEvents()
+        {
+            base.SubscribeEvents();
+        }
 
-		void OpenPanel(GameObject panel)
-		{
-			foreach (var item in m_AllPanels)
-				if (item) item.SetActive(item == panel);
-		}
-		#endregion
+        public override void UnsubscribeEvents()
+        {
+            base.UnsubscribeEvents();
+        }
 
-		#region UI OnClick Events
-		public void EscapeButtonHasBeenClicked()
-		{
-			EventManager.Instance.Raise(new EscapeButtonClickedEvent());
-		}
+        #endregion
 
-		public void PlayButtonHasBeenClicked()
-		{
-			EventManager.Instance.Raise(new PlayButtonClickedEvent());
-		}
+        #region Monobehaviour lifecycle
 
-		public void ResumeButtonHasBeenClicked()
-		{
-			EventManager.Instance.Raise(new ResumeButtonClickedEvent());
-		}
+        protected override void Awake()
+        {
+            base.Awake();
+            RegisterPanels();
+        }
 
-		public void MainMenuButtonHasBeenClicked()
-		{
-			EventManager.Instance.Raise(new MainMenuButtonClickedEvent());
-		}
+        private void Update()
+        {
+            if (Input.GetButtonDown("Cancel")) EscapeButtonHasBeenClicked();
+        }
 
-		public void QuitButtonHasBeenClicked()
-		{
-			EventManager.Instance.Raise(new QuitButtonClickedEvent());
-		}
+        #endregion
 
-		#endregion
+        #region Panel Methods
 
-		#region Callbacks to GameManager events
-		protected override void GameMenu(GameMenuEvent e)
-		{
-			OpenPanel(m_PanelMainMenu);
-		}
+        private void RegisterPanels()
+        {
+            m_AllPanels = new List<GameObject>();
+            m_AllPanels.Add(m_PanelMainMenu);
+            m_AllPanels.Add(m_PanelInGameMenu);
+            m_AllPanels.Add(m_PanelGameOver);
+        }
 
-		protected override void GamePlay(GamePlayEvent e)
-		{
-			OpenPanel(null);
-		}
+        private void OpenPanel(GameObject panel)
+        {
+            foreach (var item in m_AllPanels)
+                if (item)
+                    item.SetActive(item == panel);
+        }
 
-		protected override void GamePause(GamePauseEvent e)
-		{
-			OpenPanel(m_PanelInGameMenu);
-		}
+        #endregion
 
-		protected override void GameResume(GameResumeEvent e)
-		{
-			OpenPanel(null);
-		}
+        #region UI OnClick Events
 
-		protected override void GameOver(GameOverEvent e)
-		{
-			OpenPanel(m_PanelGameOver);
-		}
-		#endregion
-	}
+        public void EscapeButtonHasBeenClicked()
+        {
+            EventManager.Instance.Raise(new EscapeButtonClickedEvent());
+        }
 
+        public void PlayButtonHasBeenClicked()
+        {
+            EventManager.Instance.Raise(new PlayButtonClickedEvent());
+        }
+
+        public void ResumeButtonHasBeenClicked()
+        {
+            EventManager.Instance.Raise(new ResumeButtonClickedEvent());
+        }
+
+        public void MainMenuButtonHasBeenClicked()
+        {
+            EventManager.Instance.Raise(new MainMenuButtonClickedEvent());
+        }
+
+        public void QuitButtonHasBeenClicked()
+        {
+            EventManager.Instance.Raise(new QuitButtonClickedEvent());
+        }
+
+        #endregion
+
+        #region Callbacks to GameManager events
+
+        protected override void GameMenu(GameMenuEvent e)
+        {
+            OpenPanel(m_PanelMainMenu);
+        }
+
+        protected override void GamePlay(GamePlayEvent e)
+        {
+            OpenPanel(null);
+        }
+
+        protected override void GamePause(GamePauseEvent e)
+        {
+            OpenPanel(m_PanelInGameMenu);
+        }
+
+        protected override void GameResume(GameResumeEvent e)
+        {
+            OpenPanel(null);
+        }
+
+        protected override void GameOver(GameOverEvent e)
+        {
+            OpenPanel(m_PanelGameOver);
+        }
+
+        #endregion
+    }
 }
