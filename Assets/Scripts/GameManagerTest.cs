@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Melanchall.DryWetMidi.Core;
@@ -6,6 +7,7 @@ using Melanchall.DryWetMidi.Interaction;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManagerTest : MonoBehaviour
 {
@@ -20,10 +22,10 @@ public class GameManagerTest : MonoBehaviour
 
     [SerializeField] private GameObject lives;
     
-    [SerializeField] private GameObject lineA;
-    [SerializeField] private GameObject lineZ;
-    [SerializeField] private GameObject lineE;
-    [SerializeField] private GameObject lineR;
+    [SerializeField] private GameObject lineColliderA;
+    [SerializeField] private GameObject lineColliderZ;
+    [SerializeField] private GameObject lineColliderE;
+    [SerializeField] private GameObject lineColliderR;
 
     private float score;
     private float multiplicateurVitesse;
@@ -73,6 +75,11 @@ public class GameManagerTest : MonoBehaviour
             go.SetActive(false);
             _tiles.Add(go);
         }
+        
+        lineColliderA.SetActive(false);
+        lineColliderZ.SetActive(false);
+        lineColliderE.SetActive(false);
+        lineColliderR.SetActive(false);
     }
 
     private int _index;
@@ -84,7 +91,7 @@ public class GameManagerTest : MonoBehaviour
         {
             var note = _notes[i];
             var totalTimeInMilli = ((TimeSpan)note.TimeAs<MetricTimeSpan>(_tempoMap)).TotalSeconds;
-            if (totalTimeInMilli * 1.8 <= Time.time)
+            if (totalTimeInMilli * 3 <= Time.time)
             {
                 var tile = _tiles[i];
                 tile.SetActive(true);
@@ -110,19 +117,23 @@ public class GameManagerTest : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.Q))
         {
-            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.A1);
+            lineColliderA.SetActive(true);
+            StartCoroutine(DeactivateLineCollider(lineColliderA));
         }
         if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.W))
         {
-            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.B1);
+            lineColliderZ.SetActive(true);
+            StartCoroutine(DeactivateLineCollider(lineColliderZ));
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.C1);
+            lineColliderE.SetActive(true);
+            StartCoroutine(DeactivateLineCollider(lineColliderE));
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            AudioManager.instance.PlayPianoAudio(Tile.PianoNote.D1);
+            lineColliderR.SetActive(true);
+            StartCoroutine(DeactivateLineCollider(lineColliderR));
         }
         
         if(!isVanish)
@@ -130,7 +141,6 @@ public class GameManagerTest : MonoBehaviour
             if (timeRemaining > 0)
             {
                 timeRemaining -= Time.deltaTime;
-                //Debug.Log(timeRemaining);
             }
             else
             {
@@ -139,7 +149,6 @@ public class GameManagerTest : MonoBehaviour
                 ZTMPro.gameObject.SetActive(false);
                 ETMPro.gameObject.SetActive(false);
                 RTMPro.gameObject.SetActive(false);
-                //Debug.Log("Vanished");
             }
         }
 
@@ -183,6 +192,12 @@ public class GameManagerTest : MonoBehaviour
                 }
             }
         }
+    }
+
+    private IEnumerator DeactivateLineCollider(GameObject line)
+    {
+        yield return new WaitForSeconds(0.05f);
+        line.SetActive(false);
     }
 
     void GameOver()

@@ -16,7 +16,7 @@ public class Tile : MonoBehaviour
     
     private Note _note;
     private bool isCheating;
-    private readonly float vitesse = 3f;
+    private readonly float vitesse = 8f;
     public PianoNote ID { get; private set; }
 
     // Update is called once per frame
