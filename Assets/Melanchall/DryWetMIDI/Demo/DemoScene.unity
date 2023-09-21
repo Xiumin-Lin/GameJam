@@ -156,13 +156,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notePrefabs: {fileID: 757361165}
-  A: {fileID: 8300000, guid: 17261721d1abb414589062d906a70ee7, type: 3}
-  B: {fileID: 8300000, guid: 9b5327cbc5d75294ea94a26b829baf6f, type: 3}
-  C: {fileID: 8300000, guid: 0f6dea4d120763a49b801215946ff8b0, type: 3}
-  D: {fileID: 8300000, guid: 895d67b78dd413449b882d0f28c504a3, type: 3}
-  E: {fileID: 8300000, guid: c90671c41bae30d41915132ea2807787, type: 3}
-  F: {fileID: 8300000, guid: 1b1d4d1c6d3742745b92dcba365c121e, type: 3}
-  G: {fileID: 8300000, guid: ce1dd20b8deff6f43bec4b4a84ea38f5, type: 3}
+  A: {fileID: 8300000, guid: e2c143100d71f7b4c95a0d728dea7fe9, type: 3}
+  B: {fileID: 8300000, guid: 05fba15e7c440ab4ba930fa0c3064141, type: 3}
+  C: {fileID: 8300000, guid: 9c04832344d375445b9a3cb33d5d4ad0, type: 3}
+  D: {fileID: 8300000, guid: f1877c7a019a02a44aabffa3cfbf614b, type: 3}
+  E: {fileID: 8300000, guid: b36020a9193c1d747b6465986a443169, type: 3}
+  F: {fileID: 8300000, guid: 213a6ca4de738bb4eb303d606aebfd67, type: 3}
+  G: {fileID: 8300000, guid: 8f7e6e1b133139e4e9d981ce5db4606d, type: 3}
 --- !u!212 &543424785
 SpriteRenderer:
   m_ObjectHideFlags: 0

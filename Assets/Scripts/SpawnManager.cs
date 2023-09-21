@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private GameObject left_line;
     [SerializeField] private GameObject rigth_line;
@@ -26,6 +26,16 @@ public class Spawner : MonoBehaviour
             spawn.transform.position = pos;
             i++;
         }
+    }
+
+    public int GetSpawnersSize()
+    {
+        return spawners.Length;
+    }
+
+    public GameObject GetSpawnerById(int id)
+    {
+        return spawners[id];
     }
 
     // Update is called once per frame

@@ -9,7 +9,7 @@ public class PauseMenuUI : MonoBehaviour
     public static PauseMenuUI instance;
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button mainMenuButton;
-    [SerializeField] private GameObject pauseMenuUI;
+    [SerializeField] private GameObject panelInGameMenu;
     private bool isPaused;
 
     void Awake()
@@ -30,7 +30,7 @@ public class PauseMenuUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
         {
             if(PauseMenuUI.instance.IsPaused())
             {
@@ -50,13 +50,13 @@ public class PauseMenuUI : MonoBehaviour
         {
             isPaused = !isPaused;
             //Mettre en pause le jeu
-            pauseMenuUI.SetActive(true);
+            panelInGameMenu.SetActive(true);
         }
         else
         {
             isPaused = !isPaused;
             //On reprend le jeu
-            pauseMenuUI.SetActive(false);
+            panelInGameMenu.SetActive(false);
         }
     }
 

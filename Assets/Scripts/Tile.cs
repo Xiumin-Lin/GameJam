@@ -1,34 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
+using Melanchall.DryWetMidi.Interaction;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    private float vitesse = 2f;
-    [SerializeField] private GameObject spawn;
-    // Start is called before the first frame update
-    void Start()
+    public enum PianoNote
     {
-        Vector2 spawn_pos = spawn.transform.position; // Récupère la position locale de l'objet
-
-        Vector2 new_position = new Vector2(spawn_pos.x, spawn_pos.y);
-        this.transform.position = new_position;
+        A, B, C, D, E, F, G
+    }
+    
+    [SerializeField] private Note _note;
+    private PianoNote _code;
+    private float vitesse = 3f;
+    private bool isCheating = false;
+    public void SetTile(GameObject spawn, Note note)
+    {
+        _note = note;
+        Vector2 spawnPos = spawn.transform.position; // Recupere la position locale de l'objet
+        this.transform.position = new Vector2(spawnPos.x, spawnPos.y);
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(-Vector2.up * vitesse * Time.deltaTime);
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log("Collision Detected");
-        if (collision.gameObject.CompareTag("LineA"))
-        {
-            Destroy(this.gameObject);
-            Debug.Log("COLLIDED");
-        }
+        var currentSpeed = vitesse;
+        if (isCheating) currentSpeed /= 2;
+        transform.Translate(-Vector2.up * currentSpeed * Time.deltaTime);
     }
 }
