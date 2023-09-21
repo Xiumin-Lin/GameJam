@@ -5,10 +5,6 @@ using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using TMPro;
-using NAudio;
-using NAudio.Wave;
-using NAudio.CoreAudioApi;
 using UnityEngine.SceneManagement;
 
 public class GameManagerTest : MonoBehaviour
@@ -61,7 +57,7 @@ public class GameManagerTest : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        _midiFile = MidiFile.Read("./Assets/Resources/Audio/little_star.mid");
+        _midiFile = MidiFile.Read("./Assets/Resources/Audio/french_cancan.mid");
         _notes = _midiFile.GetNotes().ToArray();
         _tiles = new List<GameObject>();
         _tempoMap = _midiFile.GetTempoMap();
@@ -88,8 +84,7 @@ public class GameManagerTest : MonoBehaviour
         {
             var note = _notes[i];
             var totalTimeInMilli = ((TimeSpan)note.TimeAs<MetricTimeSpan>(_tempoMap)).TotalSeconds;
-            // Debug.Log($"{note.NoteName} Total: {Time.time} - {totalTimeInMilli} = {totalTimeInMilli < Time.time}");
-            if (totalTimeInMilli <= Time.time)
+            if (totalTimeInMilli * 1.8 <= Time.time)
             {
                 var tile = _tiles[i];
                 tile.SetActive(true);
