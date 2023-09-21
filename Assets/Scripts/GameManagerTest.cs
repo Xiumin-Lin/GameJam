@@ -51,7 +51,7 @@ public class GameManagerTest : MonoBehaviour
             if (timeRemaining > 0)
             {
                 timeRemaining -= Time.deltaTime;
-                Debug.Log(timeRemaining);
+                //Debug.Log(timeRemaining);
             }
             else
             {
@@ -60,7 +60,7 @@ public class GameManagerTest : MonoBehaviour
                 ZTMPro.gameObject.SetActive(false);
                 ETMPro.gameObject.SetActive(false);
                 RTMPro.gameObject.SetActive(false);
-                Debug.Log("Vanished");
+                //Debug.Log("Vanished");
             }
         }
 
@@ -79,7 +79,7 @@ public class GameManagerTest : MonoBehaviour
         {
             multiplicateurVitesse = 1f - ((50f - (float)volumePercent) * 2) / 100;   // Compris entre 0 et 1
         }
-        //Debug.Log(multiplicateurVitesse);
+        Debug.Log("Multiplicateur : " + multiplicateurVitesse);
 
         //Pour augmenter le score
         /*score++;
