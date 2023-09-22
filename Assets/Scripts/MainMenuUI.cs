@@ -13,7 +13,7 @@ public class MainMenuUI : MonoBehaviour
         quitButton.onClick.AddListener(QuitGame);
 
         // PlayerPrefs son
-        PlayerPrefs.SetFloat("volume", -50f);
+        PlayerPrefs.SetFloat("volume", -20f);
         PlayerPrefs.SetInt("volumeSliderPercent", 50);
     }
 
