@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
-using TMPro;
 
 public class SettingsUI : MonoBehaviour
 {
@@ -17,21 +14,9 @@ public class SettingsUI : MonoBehaviour
         volumeSlider.value = PlayerPrefs.GetFloat("volume");  
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void SetVolume(float volume)
     {
-        int volumeSliderPercent = (int) (volume - volumeSlider.minValue);
+        int volumeSliderPercent = (int) (volume - volumeSlider.minValue) * 2;
         volumePercentageTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = volumeSliderPercent.ToString() + "%";
         audioMixer.SetFloat("volume", volume);
         PlayerPrefs.SetFloat("volume", volume);

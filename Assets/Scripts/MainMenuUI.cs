@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -15,26 +13,13 @@ public class MainMenuUI : MonoBehaviour
         quitButton.onClick.AddListener(QuitGame);
 
         // PlayerPrefs son
-        PlayerPrefs.SetFloat("volume", -30f);
+        PlayerPrefs.SetFloat("volume", -5f);
         PlayerPrefs.SetInt("volumeSliderPercent", 50);
-
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     void ChangeScene()
     {
-        SceneManager.LoadScene("InGameUI");
+        SceneManager.LoadScene("InGameUI", LoadSceneMode.Single);
     }
 
     void QuitGame()
