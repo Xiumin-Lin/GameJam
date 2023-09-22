@@ -70,6 +70,7 @@ public class GameManager : MonoBehaviour
         _index = 0;
         _delayGlitchBonus = 0;
         _gameIsEnd = false;
+        _eightLength = _notes.Length / 8;
     }
 
     // Start is called before the first frame update
@@ -93,6 +94,8 @@ public class GameManager : MonoBehaviour
         lineColliderR.SetActive(false);
     }
 
+    private int _eightLength;
+
     private void FixedUpdate()
     {
         if(PauseMenuUI.Instance.IsPaused() || _gameIsEnd) return;
@@ -103,9 +106,10 @@ public class GameManager : MonoBehaviour
         {
             var note = _notes[i];
             var totalTimeInMilli = note.TimeAs<MetricTimeSpan>(_tempoMap).TotalSeconds;
-            if (totalTimeInMilli * (1.2 + _delayGlitchBonus) <= Time.timeSinceLevelLoad)
+            if (totalTimeInMilli * (3 + _delayGlitchBonus) <= Time.timeSinceLevelLoad)
             {
                 var tile = _tiles[i];
+                if (i % _eightLength == 0) Tile.Vitesse += 1f;
                 tile.SetActive(true);
                 _index = i + 1;
             }
@@ -129,22 +133,22 @@ public class GameManager : MonoBehaviour
         
         if(PauseMenuUI.Instance.IsPaused() || _gameIsEnd) return;
         
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             lineColliderA.SetActive(true);
             StartCoroutine(DeactivateLineCollider(lineColliderA));
         }
-        if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.T))
         {
             lineColliderZ.SetActive(true);
             StartCoroutine(DeactivateLineCollider(lineColliderZ));
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Y))
         {
             lineColliderE.SetActive(true);
             StartCoroutine(DeactivateLineCollider(lineColliderE));
         }
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.U))
         {
             lineColliderR.SetActive(true);
             StartCoroutine(DeactivateLineCollider(lineColliderR));
