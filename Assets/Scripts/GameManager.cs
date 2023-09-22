@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
     private float _delayGlitchBonus;
     
     private bool _gameIsEnd;
-    public int NbTilesDestroyed { get; set; } 
+    private int _nbTilesDestroyed;
     
     [SerializeField] private GameObject spawner;
 
@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
         _gameIsEnd = false;
         _increamentModulo = _notes.Length / 10;
 
-        NbTilesDestroyed = 0;
+        _nbTilesDestroyed = 0;
     }
 
     // Start is called before the first frame update
@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
     {
         if(PauseMenuUI.Instance.IsPaused() || _gameIsEnd) return;
         
-        if(NbTilesDestroyed >= _tiles.Count && _nbLives > 0)
+        if(_nbTilesDestroyed >= _tiles.Count && _nbLives > 0)
         {
             Victory();
             return;
@@ -202,7 +202,7 @@ public class GameManager : MonoBehaviour
     {
         _score++;
         scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = _score.ToString();
-        NbTilesDestroyed++;
+        _nbTilesDestroyed++;
     }
 
     public void DecreaseHp()
@@ -210,7 +210,7 @@ public class GameManager : MonoBehaviour
         _nbLives--;
         if(_nbLives >= 0) lives.transform.GetChild(_nbLives).gameObject.SetActive(false);
         if (_nbLives <= 0) GameOver();
-        NbTilesDestroyed++;
+        _nbTilesDestroyed++;
     }
 
     private IEnumerator DeactivateLineCollider(GameObject line)
