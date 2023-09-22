@@ -1003,6 +1003,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playAgainButton: {fileID: 2010284371}
   mainMenuButton: {fileID: 931802093}
+  scoreTMPro: {fileID: 1133774951}
 --- !u!1 &1436697523
 GameObject:
   m_ObjectHideFlags: 0

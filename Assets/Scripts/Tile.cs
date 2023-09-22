@@ -1,3 +1,4 @@
+using System;
 using Melanchall.DryWetMidi.Interaction;
 using UnityEngine;
 
@@ -15,8 +16,13 @@ public class Tile : MonoBehaviour
     }
     
     private Note _note;
-    public static float Vitesse = 1f;
+    public static float Vitesse = 2.5f;
     public PianoNote ID { get; private set; }
+
+    private void Awake()
+    {
+        Vitesse = 2.5f;
+    }
 
     // Update is called once per frame
     private void Update()

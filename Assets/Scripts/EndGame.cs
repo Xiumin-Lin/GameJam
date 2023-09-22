@@ -14,24 +14,13 @@ public class EndGame : MonoBehaviour
     {
         playAgainButton.onClick.AddListener(PlayAgainScene);
         mainMenuButton.onClick.AddListener(MainMenuScene);
-
-        scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = PlayerPrefs.GetInt("score");
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = PlayerPrefs.GetInt("score").ToString();
     }
 
     private void PlayAgainScene()
     {
+        PlayerPrefs.SetFloat("volume", -20f);
+        PlayerPrefs.SetInt("volumeSliderPercent", 50);
         SceneManager.LoadScene("InGameUI");
     }
 

@@ -63,14 +63,14 @@ public class GameManager : MonoBehaviour
         _score = 0;
         scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = "0";
         
-        _midiFile = MidiFile.Read("./Assets/Resources/Audio/french_cancan.mid");
+        _midiFile = MidiFile.Read("./Assets/Resources/Audio/mario.mid");
         _notes = _midiFile.GetNotes().ToArray();
         _tiles = new List<GameObject>();
         _tempoMap = _midiFile.GetTempoMap();
         _index = 0;
         _delayGlitchBonus = 0;
         _gameIsEnd = false;
-        _eightLength = _notes.Length / 8;
+        _increamentModulo = _notes.Length / 10;
     }
 
     // Start is called before the first frame update
@@ -94,22 +94,37 @@ public class GameManager : MonoBehaviour
         lineColliderR.SetActive(false);
     }
 
-    private int _eightLength;
+    private int _increamentModulo;
 
     private void FixedUpdate()
     {
         if(PauseMenuUI.Instance.IsPaused() || _gameIsEnd) return;
         
-        if(_tiles.Count <= 0) Victory();
+        if(_index >= _tiles.Count && _score >= _tiles.Count - _nbLives)
+        {
+            Victory();
+            return;
+        }
         
         for (int i = _index; i < _notes.Length; i++)
         {
             var note = _notes[i];
             var totalTimeInMilli = note.TimeAs<MetricTimeSpan>(_tempoMap).TotalSeconds;
-            if (totalTimeInMilli * (3 + _delayGlitchBonus) <= Time.timeSinceLevelLoad)
+            if (totalTimeInMilli * (1 + _delayGlitchBonus) <= Time.timeSinceLevelLoad)
             {
                 var tile = _tiles[i];
-                if (i % _eightLength == 0) Tile.Vitesse += 1f;
+                if (i % _increamentModulo == 0)
+                {
+                    if ((i * 100) / _notes.Length >= 50)
+                    {
+                        Tile.Vitesse += 2f;
+                    }
+                    else
+                    {
+                        Tile.Vitesse += 0.2f;
+                    }
+                }
+                Debug.Log(Tile.Vitesse);
                 tile.SetActive(true);
                 _index = i + 1;
             }
@@ -173,7 +188,12 @@ public class GameManager : MonoBehaviour
         if (PlayerPrefs.GetInt("volumeSliderPercent") == 100)
         {
             GlitchIsActivate = true;
-            _delayGlitchBonus = 1.2f;
+        }
+
+        if (GlitchIsActivate)
+        {
+            Tile.Vitesse = 6.5f;
+            _delayGlitchBonus = 1.1f;
         }
     }
     
