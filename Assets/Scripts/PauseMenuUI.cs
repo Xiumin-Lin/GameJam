@@ -14,17 +14,16 @@ public class PauseMenuUI : MonoBehaviour
 
     void Awake()
     {
-        instance = this;
-
+        if (instance != null && instance != this) {
+            Destroy(gameObject);
+        }
+        else {
+            instance = this;
+        }
+        
         resumeButton.onClick.AddListener(ResumeGame);
         mainMenuButton.onClick.AddListener(ChangeScene);
         isPaused = false;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
     }
 
     // Update is called once per frame
@@ -32,16 +31,13 @@ public class PauseMenuUI : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
         {
-            if(PauseMenuUI.instance.IsPaused())
-            {
-                ResumeGame();
-            }
+            if(isPaused) ResumeGame();
         }
     }
 
     void ChangeScene()
     {
-        SceneManager.LoadScene("MainMenuUI");
+        SceneManager.LoadScene("MainMenuUI", LoadSceneMode.Single);
     }
 
     public void ResumeGame()

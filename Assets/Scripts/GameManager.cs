@@ -1,17 +1,15 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
 using UnityEngine;
-using Random = UnityEngine.Random;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
-public class GameManagerTest : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    public static GameManagerTest instance;
+    public static GameManager instance;
     
     [SerializeField] private GameObject pauseMenuUI;
     [SerializeField] private Transform scoreTMPro;
@@ -31,6 +29,8 @@ public class GameManagerTest : MonoBehaviour
     private float multiplicateurVitesse;
     private int nbLives;
 
+    public bool GlitchIsActivate { get; private set; }
+
     private float timeRemaining = 2;
     private bool isVanish = false;
     
@@ -45,25 +45,29 @@ public class GameManagerTest : MonoBehaviour
 
     void Awake()
     {
-        instance = this;
+        if (instance != null && instance != this) {
+            Destroy(gameObject);
+        }
+        else {
+            instance = this;
+        }
 
-        pauseMenuUI.SetActive(true);
+        pauseMenuUI.SetActive(true);    // awake pauseMenu 
         pauseMenuUI.SetActive(false);
 
         nbLives = 3;
-
         score = 0;
         scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = "0";
+        
+        _midiFile = MidiFile.Read("./Assets/Resources/Audio/french_cancan.mid");
+        _notes = _midiFile.GetNotes().ToArray();
+        _tiles = new List<GameObject>();
+        _tempoMap = _midiFile.GetTempoMap();
     }
 
     // Start is called before the first frame update
     private void Start()
     {
-        _midiFile = MidiFile.Read("./Assets/Resources/Audio/french_cancan.mid");
-        _notes = _midiFile.GetNotes().ToArray();
-        _tiles = new List<GameObject>();
-        _tempoMap = _midiFile.GetTempoMap();
-
         var spawnerScript = spawner.GetComponent<SpawnManager>();
         var spawnerSize = spawnerScript.GetSpawnersSize();
         
@@ -83,15 +87,18 @@ public class GameManagerTest : MonoBehaviour
     }
 
     private int _index;
+    private float _delayGlitchBonus = 0;
 
     private void FixedUpdate()
     {
+        if(PauseMenuUI.instance.IsPaused()) return;
+        
         if(_tiles.Count <= 0) return;
         for (int i = _index; i < _notes.Length; i++)
         {
             var note = _notes[i];
-            var totalTimeInMilli = ((TimeSpan)note.TimeAs<MetricTimeSpan>(_tempoMap)).TotalSeconds;
-            if (totalTimeInMilli * 3 <= Time.time)
+            var totalTimeInMilli = note.TimeAs<MetricTimeSpan>(_tempoMap).TotalSeconds;
+            if (totalTimeInMilli * (1.2 + _delayGlitchBonus) <= Time.time)
             {
                 var tile = _tiles[i];
                 tile.SetActive(true);
@@ -107,13 +114,15 @@ public class GameManagerTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
         {
             if(!PauseMenuUI.instance.IsPaused())
             {
                 PauseMenuUI.instance.ResumeGame();
             }
         }
+        
+        if(PauseMenuUI.instance.IsPaused()) return;
         
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.Q))
         {
@@ -152,17 +161,13 @@ public class GameManagerTest : MonoBehaviour
             }
         }
 
-
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
-        {
-            if(!PauseMenuUI.instance.IsPaused())
-            {
-                PauseMenuUI.instance.ResumeGame();
-            }
-        }
-
         //Multiplicateur de vitesse
-        int volumePercent = PlayerPrefs.GetInt("volumeSliderPercent");
+        // int volumePercent = PlayerPrefs.GetInt("volumeSliderPercent");
+        if (PlayerPrefs.GetInt("volumeSliderPercent") == 100)
+        {
+            GlitchIsActivate = true;
+            _delayGlitchBonus = 2f;
+        }
         /// A MODIFIER SELON LA VITESSE DE BASE DE LA MUSIQUE
         /*multiplicateurVitesse = 1f;
         if (volumePercent > 80)
@@ -196,6 +201,18 @@ public class GameManagerTest : MonoBehaviour
 
     void GameOver()
     {
-        SceneManager.LoadScene("GameOver");
+        foreach (GameObject go in _tiles)
+        {
+            Destroy(go);
+        }
+        SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
+    }
+
+    private void OnDestroy()
+    {
+        foreach (GameObject go in _tiles)
+        {
+            Destroy(go);
+        }
     }
 }

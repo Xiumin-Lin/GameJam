@@ -15,25 +15,13 @@ public class GameOver : MonoBehaviour
         mainMenuButton.onClick.AddListener(MainMenuScene);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void RetryGameScene()
     {
-        SceneManager.LoadScene("InGameUI");
+        SceneManager.LoadScene("InGameUI", LoadSceneMode.Single);
     }
 
     private void MainMenuScene()
     {
-        SceneManager.LoadScene("MainMenuUI");
+        SceneManager.LoadScene("MainMenuUI", LoadSceneMode.Single);
     }
 }

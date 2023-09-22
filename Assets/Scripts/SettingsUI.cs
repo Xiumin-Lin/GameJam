@@ -17,18 +17,6 @@ public class SettingsUI : MonoBehaviour
         volumeSlider.value = PlayerPrefs.GetFloat("volume");  
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void SetVolume(float volume)
     {
         int volumeSliderPercent = (int) (volume - volumeSlider.minValue) * 2;

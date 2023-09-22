@@ -15,15 +15,16 @@ public class Tile : MonoBehaviour
     }
     
     private Note _note;
-    private bool isCheating;
-    private readonly float vitesse = 8f;
+    private readonly float vitesse = 7f;
     public PianoNote ID { get; private set; }
 
     // Update is called once per frame
     private void Update()
     {
+        if(PauseMenuUI.instance.IsPaused()) return;
+        
         var currentSpeed = vitesse;
-        if (isCheating) currentSpeed /= 2;
+        if (GameManager.instance.GlitchIsActivate) currentSpeed /= 4;
         transform.Translate(-Vector2.up * currentSpeed * Time.deltaTime);
     }
 
@@ -92,10 +93,5 @@ public class Tile : MonoBehaviour
             },
             _ => PianoNote.A1
         };
-    }
-
-    public void SetIsCheating(bool boolean)
-    {
-        isCheating = boolean;
     }
 }
