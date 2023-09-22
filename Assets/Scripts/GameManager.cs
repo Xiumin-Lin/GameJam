@@ -201,6 +201,7 @@ public class GameManager : MonoBehaviour
     void Victory()
     {
         _gameIsEnd = true;
+        PlayerPrefs.SetInt("score", _score);
         SceneManager.LoadScene("VictoryScene", LoadSceneMode.Single);
     }
 
