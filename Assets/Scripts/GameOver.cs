@@ -15,8 +15,8 @@ public class GameOver : MonoBehaviour
 
     private void RetryGameScene()
     {
-        PlayerPrefs.SetFloat("volume", -20f);
-        PlayerPrefs.SetInt("volumeSliderPercent", 50);
+        PlayerPrefs.SetFloat("volume", -5f);
+        PlayerPrefs.SetInt("volumeSliderPercent", 75);
         SceneManager.LoadScene("InGameUI", LoadSceneMode.Single);
     }
 
