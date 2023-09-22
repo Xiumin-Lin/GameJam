@@ -26,12 +26,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject lineColliderR;
 
     private int _score;
-    private float _multiplicateurVitesse;
     private int _nbLives;
 
     public bool GlitchIsActivate { get; private set; }
 
-    private float _timeRemaining = 2;
+    private float _timeRemaining = 6;
     private bool _isVanish = false;
     
     [SerializeField] private GameObject tilePrefab;
@@ -44,6 +43,7 @@ public class GameManager : MonoBehaviour
     private float _delayGlitchBonus;
     
     private bool _gameIsEnd;
+    public int NbTilesDestroyed { get; set; } 
     
     [SerializeField] private GameObject spawner;
 
@@ -71,6 +71,8 @@ public class GameManager : MonoBehaviour
         _delayGlitchBonus = 0;
         _gameIsEnd = false;
         _increamentModulo = _notes.Length / 10;
+
+        NbTilesDestroyed = 0;
     }
 
     // Start is called before the first frame update
@@ -100,7 +102,7 @@ public class GameManager : MonoBehaviour
     {
         if(PauseMenuUI.Instance.IsPaused() || _gameIsEnd) return;
         
-        if(_index >= _tiles.Count && _score >= _tiles.Count - _nbLives)
+        if(NbTilesDestroyed >= _tiles.Count && _nbLives > 0)
         {
             Victory();
             return;
@@ -124,7 +126,6 @@ public class GameManager : MonoBehaviour
                         Tile.Vitesse += 0.2f;
                     }
                 }
-                Debug.Log(Tile.Vitesse);
                 tile.SetActive(true);
                 _index = i + 1;
             }
@@ -201,15 +202,15 @@ public class GameManager : MonoBehaviour
     {
         _score++;
         scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = _score.ToString();
+        NbTilesDestroyed++;
     }
 
     public void DecreaseHp()
     {
         _nbLives--;
-        if(_nbLives >= 0)
-            lives.transform.GetChild(_nbLives).gameObject.SetActive(false);
-        if (_nbLives <= 0)
-            GameOver();
+        if(_nbLives >= 0) lives.transform.GetChild(_nbLives).gameObject.SetActive(false);
+        if (_nbLives <= 0) GameOver();
+        NbTilesDestroyed++;
     }
 
     private IEnumerator DeactivateLineCollider(GameObject line)

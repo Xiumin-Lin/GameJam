@@ -342,6 +342,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 170784643407339362, guid: 7896dcf4413dbfe4c80afb94ce9f0239, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 578225470311109293, guid: 7896dcf4413dbfe4c80afb94ce9f0239, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 3.002
+      objectReference: {fileID: 0}
+    - target: {fileID: 815386777602487058, guid: 7896dcf4413dbfe4c80afb94ce9f0239, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -2.997
+      objectReference: {fileID: 0}
+    - target: {fileID: 2123192772585639214, guid: 7896dcf4413dbfe4c80afb94ce9f0239, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -1.001
+      objectReference: {fileID: 0}
     - target: {fileID: 4136599632193907275, guid: 7896dcf4413dbfe4c80afb94ce9f0239, type: 3}
       propertyPath: m_Name
       value: Spawner
