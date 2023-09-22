@@ -40,6 +40,10 @@ public class GameManager : MonoBehaviour
     private Note[] _notes;
     private List<GameObject> _tiles;
     private TempoMap _tempoMap;
+    private int _index;
+    private float _delayGlitchBonus;
+    
+    private bool _gameIsEnd;
     
     [SerializeField] private GameObject spawner;
 
@@ -63,6 +67,9 @@ public class GameManager : MonoBehaviour
         _notes = _midiFile.GetNotes().ToArray();
         _tiles = new List<GameObject>();
         _tempoMap = _midiFile.GetTempoMap();
+        _index = 0;
+        _delayGlitchBonus = 0;
+        _gameIsEnd = false;
     }
 
     // Start is called before the first frame update
@@ -86,19 +93,17 @@ public class GameManager : MonoBehaviour
         lineColliderR.SetActive(false);
     }
 
-    private int _index;
-    private float _delayGlitchBonus = 0;
-
     private void FixedUpdate()
     {
-        if(PauseMenuUI.instance.IsPaused()) return;
+        if(PauseMenuUI.instance.IsPaused() || _gameIsEnd) return;
         
-        if(_tiles.Count <= 0) return;
+        if(_tiles.Count <= 0) Victory();
+        
         for (int i = _index; i < _notes.Length; i++)
         {
             var note = _notes[i];
             var totalTimeInMilli = note.TimeAs<MetricTimeSpan>(_tempoMap).TotalSeconds;
-            if (totalTimeInMilli * (1.2 + _delayGlitchBonus) <= Time.time)
+            if (totalTimeInMilli * (1.2 + _delayGlitchBonus) <= Time.timeSinceLevelLoad)
             {
                 var tile = _tiles[i];
                 tile.SetActive(true);
@@ -122,7 +127,7 @@ public class GameManager : MonoBehaviour
             }
         }
         
-        if(PauseMenuUI.instance.IsPaused()) return;
+        if(PauseMenuUI.instance.IsPaused() || _gameIsEnd) return;
         
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.Q))
         {
@@ -166,7 +171,7 @@ public class GameManager : MonoBehaviour
         if (PlayerPrefs.GetInt("volumeSliderPercent") == 100)
         {
             GlitchIsActivate = true;
-            _delayGlitchBonus = 2f;
+            _delayGlitchBonus = 1.2f;
         }
         /// A MODIFIER SELON LA VITESSE DE BASE DE LA MUSIQUE
         /*multiplicateurVitesse = 1f;
@@ -198,9 +203,20 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.05f);
         line.SetActive(false);
     }
+    
+    void Victory()
+    {
+        _gameIsEnd = true;
+        foreach (GameObject go in _tiles)
+        {
+            Destroy(go);
+        }
+        SceneManager.LoadScene("VictoryScene", LoadSceneMode.Single);
+    }
 
     void GameOver()
     {
+        _gameIsEnd = true;
         foreach (GameObject go in _tiles)
         {
             Destroy(go);

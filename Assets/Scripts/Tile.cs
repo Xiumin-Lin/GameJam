@@ -15,7 +15,7 @@ public class Tile : MonoBehaviour
     }
     
     private Note _note;
-    private readonly float vitesse = 7f;
+    private readonly float vitesse = 8f;
     public PianoNote ID { get; private set; }
 
     // Update is called once per frame
@@ -24,7 +24,7 @@ public class Tile : MonoBehaviour
         if(PauseMenuUI.instance.IsPaused()) return;
         
         var currentSpeed = vitesse;
-        if (GameManager.instance.GlitchIsActivate) currentSpeed /= 4;
+        if (GameManager.instance.GlitchIsActivate) currentSpeed /= 3;
         transform.Translate(-Vector2.up * currentSpeed * Time.deltaTime);
     }
 

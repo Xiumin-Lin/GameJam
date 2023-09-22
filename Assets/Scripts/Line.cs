@@ -4,7 +4,7 @@ public class Line : MonoBehaviour
 {
     [SerializeField] private KeyCode[] keys;
 
-    private void OnTriggerStay2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         Tile go = other.gameObject.GetComponent<Tile>();
         if (go != null)
