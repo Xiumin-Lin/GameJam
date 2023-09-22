@@ -9,8 +9,8 @@ public class Line : MonoBehaviour
         Tile go = other.gameObject.GetComponent<Tile>();
         if (go != null)
         {
-            GameManager.instance.IncreaseScore();
-            AudioManager.instance.PlayPianoAudio(go.ID);
+            GameManager.Instance.IncreaseScore();
+            AudioManager.Instance.PlayPianoAudio(go.ID);
             Destroy(other.gameObject, 0);
         }
     }

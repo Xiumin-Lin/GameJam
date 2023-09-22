@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
@@ -11,9 +8,9 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Vector2 middle_up_screen = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height, 0));
-        Vector2 spawner_pos = new Vector2(middle_up_screen.x, middle_up_screen.y);
-        this.transform.position = spawner_pos;
+        Vector2 middleUpScreen = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height, 0));
+        Vector2 spawnerPos = new Vector2(middleUpScreen.x, middleUpScreen.y);
+        this.transform.position = spawnerPos;
 
         // Placement des spawns
         float width = rigth_line.transform.position.x - left_line.transform.position.x;
@@ -36,11 +33,5 @@ public class SpawnManager : MonoBehaviour
     public GameObject GetSpawnerById(int id)
     {
         return spawners[id];
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

@@ -13,7 +13,7 @@ public class LineOut : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        GameManager.instance.DecreaseHP();
+        GameManager.Instance.DecreaseHp();
         Destroy(other.gameObject, 1);
         _sprite.enabled = true;
         StartCoroutine(DesableSprite());

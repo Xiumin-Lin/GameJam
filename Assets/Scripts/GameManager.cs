@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager Instance;
     
     [SerializeField] private GameObject pauseMenuUI;
     [SerializeField] private Transform scoreTMPro;
@@ -25,14 +25,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject lineColliderE;
     [SerializeField] private GameObject lineColliderR;
 
-    private int score;
-    private float multiplicateurVitesse;
-    private int nbLives;
+    private int _score;
+    private float _multiplicateurVitesse;
+    private int _nbLives;
 
     public bool GlitchIsActivate { get; private set; }
 
-    private float timeRemaining = 2;
-    private bool isVanish = false;
+    private float _timeRemaining = 2;
+    private bool _isVanish = false;
     
     [SerializeField] private GameObject tilePrefab;
     private MidiFile _midiFile;
@@ -49,18 +49,18 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance != null && instance != this) {
+        if (Instance != null && Instance != this) {
             Destroy(gameObject);
         }
         else {
-            instance = this;
+            Instance = this;
         }
 
         pauseMenuUI.SetActive(true);    // awake pauseMenu 
         pauseMenuUI.SetActive(false);
 
-        nbLives = 3;
-        score = 0;
+        _nbLives = 3;
+        _score = 0;
         scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = "0";
         
         _midiFile = MidiFile.Read("./Assets/Resources/Audio/french_cancan.mid");
@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(PauseMenuUI.instance.IsPaused() || _gameIsEnd) return;
+        if(PauseMenuUI.Instance.IsPaused() || _gameIsEnd) return;
         
         if(_tiles.Count <= 0) Victory();
         
@@ -121,13 +121,13 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
         {
-            if(!PauseMenuUI.instance.IsPaused())
+            if(!PauseMenuUI.Instance.IsPaused())
             {
-                PauseMenuUI.instance.ResumeGame();
+                PauseMenuUI.Instance.ResumeGame();
             }
         }
         
-        if(PauseMenuUI.instance.IsPaused() || _gameIsEnd) return;
+        if(PauseMenuUI.Instance.IsPaused() || _gameIsEnd) return;
         
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.Q))
         {
@@ -150,15 +150,15 @@ public class GameManager : MonoBehaviour
             StartCoroutine(DeactivateLineCollider(lineColliderR));
         }
         
-        if(!isVanish)
+        if(!_isVanish)
         {
-            if (timeRemaining > 0)
+            if (_timeRemaining > 0)
             {
-                timeRemaining -= Time.deltaTime;
+                _timeRemaining -= Time.deltaTime;
             }
             else
             {
-                isVanish = true;
+                _isVanish = true;
                 ATMPro.gameObject.SetActive(false);
                 ZTMPro.gameObject.SetActive(false);
                 ETMPro.gameObject.SetActive(false);
@@ -185,16 +185,16 @@ public class GameManager : MonoBehaviour
     
     public void IncreaseScore()
     {
-        score++;
-        scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = score.ToString();
+        _score++;
+        scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = _score.ToString();
     }
 
-    public void DecreaseHP()
+    public void DecreaseHp()
     {
-        nbLives--;
-        if(nbLives > 0)
+        _nbLives--;
+        if(_nbLives > 0)
         {
-            lives.transform.GetChild(nbLives).gameObject.SetActive(false);
+            lives.transform.GetChild(_nbLives).gameObject.SetActive(false);
         } else GameOver();
     }
 
@@ -207,28 +207,12 @@ public class GameManager : MonoBehaviour
     void Victory()
     {
         _gameIsEnd = true;
-        foreach (GameObject go in _tiles)
-        {
-            Destroy(go);
-        }
         SceneManager.LoadScene("VictoryScene", LoadSceneMode.Single);
     }
 
     void GameOver()
     {
         _gameIsEnd = true;
-        foreach (GameObject go in _tiles)
-        {
-            Destroy(go);
-        }
         SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
-    }
-
-    private void OnDestroy()
-    {
-        foreach (GameObject go in _tiles)
-        {
-            Destroy(go);
-        }
     }
 }

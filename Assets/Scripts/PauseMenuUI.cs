@@ -1,29 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class PauseMenuUI : MonoBehaviour
 {
-    public static PauseMenuUI instance;
+    public static PauseMenuUI Instance;
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button mainMenuButton;
     [SerializeField] private GameObject panelInGameMenu;
-    private bool isPaused;
+    private bool _isPaused;
 
     void Awake()
     {
-        if (instance != null && instance != this) {
+        if (Instance != null && Instance != this) {
             Destroy(gameObject);
         }
         else {
-            instance = this;
+            Instance = this;
         }
         
         resumeButton.onClick.AddListener(ResumeGame);
         mainMenuButton.onClick.AddListener(ChangeScene);
-        isPaused = false;
+        _isPaused = false;
     }
 
     // Update is called once per frame
@@ -31,7 +29,7 @@ public class PauseMenuUI : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
         {
-            if(isPaused) ResumeGame();
+            if(_isPaused) ResumeGame();
         }
     }
 
@@ -42,15 +40,15 @@ public class PauseMenuUI : MonoBehaviour
 
     public void ResumeGame()
     {
-        if(!isPaused)
+        if(!_isPaused)
         {
-            isPaused = !isPaused;
+            _isPaused = !_isPaused;
             //Mettre en pause le jeu
             panelInGameMenu.SetActive(true);
         }
         else
         {
-            isPaused = !isPaused;
+            _isPaused = !_isPaused;
             //On reprend le jeu
             panelInGameMenu.SetActive(false);
         }
@@ -58,6 +56,6 @@ public class PauseMenuUI : MonoBehaviour
 
     public bool IsPaused()
     {
-        return isPaused;
+        return _isPaused;
     }
 }
