@@ -1,238 +1,218 @@
-﻿using System.Collections;
-using SDD.Events;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Melanchall.DryWetMidi.Core;
+using Melanchall.DryWetMidi.Interaction;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
-namespace STUDENT_NAME
+public class GameManager : MonoBehaviour
 {
-    public enum GameState
+    public static GameManager Instance;
+    
+    [SerializeField] private GameObject pauseMenuUI;
+    [SerializeField] private Transform scoreTMPro;
+    [SerializeField] private Transform ATMPro;
+    [SerializeField] private Transform ZTMPro;
+    [SerializeField] private Transform ETMPro;
+    [SerializeField] private Transform RTMPro;
+
+    [SerializeField] private GameObject lives;
+    
+    [SerializeField] private GameObject lineColliderA;
+    [SerializeField] private GameObject lineColliderZ;
+    [SerializeField] private GameObject lineColliderE;
+    [SerializeField] private GameObject lineColliderR;
+
+    private int _score;
+    private float _multiplicateurVitesse;
+    private int _nbLives;
+
+    public bool GlitchIsActivate { get; private set; }
+
+    private float _timeRemaining = 2;
+    private bool _isVanish = false;
+    
+    [SerializeField] private GameObject tilePrefab;
+    private MidiFile _midiFile;
+
+    private Note[] _notes;
+    private List<GameObject> _tiles;
+    private TempoMap _tempoMap;
+    private int _index;
+    private float _delayGlitchBonus;
+    
+    private bool _gameIsEnd;
+    
+    [SerializeField] private GameObject spawner;
+
+    void Awake()
     {
-        gameMenu,
-        gamePlay,
-        gameNextLevel,
-        gamePause,
-        gameOver,
-        gameVictory
+        if (Instance != null && Instance != this) {
+            Destroy(gameObject);
+        }
+        else {
+            Instance = this;
+        }
+
+        pauseMenuUI.SetActive(true);    // awake pauseMenu 
+        pauseMenuUI.SetActive(false);
+
+        _nbLives = 3;
+        _score = 0;
+        scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = "0";
+        
+        _midiFile = MidiFile.Read("./Assets/Resources/Audio/french_cancan.mid");
+        _notes = _midiFile.GetNotes().ToArray();
+        _tiles = new List<GameObject>();
+        _tempoMap = _midiFile.GetTempoMap();
+        _index = 0;
+        _delayGlitchBonus = 0;
+        _gameIsEnd = false;
     }
 
-    public class GameManager : Manager<GameManager>
+    // Start is called before the first frame update
+    private void Start()
     {
-        #region Time
-
-        private void SetTimeScale(float newTimeScale)
+        var spawnerScript = spawner.GetComponent<SpawnManager>();
+        var spawnerSize = spawnerScript.GetSpawnersSize();
+        
+        foreach (var note in _midiFile.GetNotes()) // preload each note
         {
-            Time.timeScale = newTimeScale;
+            GameObject go = Instantiate(tilePrefab, Vector3.zero, Quaternion.identity);
+            Tile tile = go.GetComponent<Tile>();
+            tile.SetTile(spawnerScript.GetSpawnerById(Random.Range(0, spawnerSize)), note);
+            go.SetActive(false);
+            _tiles.Add(go);
         }
+        
+        lineColliderA.SetActive(false);
+        lineColliderZ.SetActive(false);
+        lineColliderE.SetActive(false);
+        lineColliderR.SetActive(false);
+    }
 
-        #endregion
-
-        #region Manager implementation
-
-        protected override IEnumerator InitCoroutine()
+    private void FixedUpdate()
+    {
+        if(PauseMenuUI.Instance.IsPaused() || _gameIsEnd) return;
+        
+        if(_tiles.Count <= 0) Victory();
+        
+        for (int i = _index; i < _notes.Length; i++)
         {
-            Menu();
-            InitNewGame(); // essentiellement pour que les statistiques du jeu soient mise à jour en HUD
-            yield break;
-        }
-
-        #endregion
-
-        #region Game flow & Gameplay
-
-        //Game initialization
-        private void InitNewGame(bool raiseStatsEvent = true)
-        {
-            SetScore(0);
-        }
-
-        #endregion
-
-        #region Callbacks to events issued by Score items
-
-        private void ScoreHasBeenGained(ScoreItemEvent e)
-        {
-            if (IsPlaying)
-                IncrementScore(e.eScore);
-        }
-
-        #endregion
-
-        #region Game State
-
-        private GameState m_GameState;
-        public bool IsPlaying => m_GameState == GameState.gamePlay;
-
-        #endregion
-
-        //LIVES
-
-        #region Lives
-
-        [Header("GameManager")] [SerializeField]
-        private int m_NStartLives;
-
-        public int NLives { get; private set; }
-
-        private void DecrementNLives(int decrement)
-        {
-            SetNLives(NLives - decrement);
-        }
-
-        private void SetNLives(int nLives)
-        {
-            NLives = nLives;
-            EventManager.Instance.Raise(new GameStatisticsChangedEvent
-                { eBestScore = BestScore, eScore = m_Score, eNLives = NLives });
-        }
-
-        #endregion
-
-
-        #region Score
-
-        private float m_Score;
-
-        public float Score
-        {
-            get => m_Score;
-            set
+            var note = _notes[i];
+            var totalTimeInMilli = note.TimeAs<MetricTimeSpan>(_tempoMap).TotalSeconds;
+            if (totalTimeInMilli * (1.2 + _delayGlitchBonus) <= Time.timeSinceLevelLoad)
             {
-                m_Score = value;
-                BestScore = Mathf.Max(BestScore, value);
+                var tile = _tiles[i];
+                tile.SetActive(true);
+                _index = i + 1;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+        {
+            if(!PauseMenuUI.Instance.IsPaused())
+            {
+                PauseMenuUI.Instance.ResumeGame();
+            }
+        }
+        
+        if(PauseMenuUI.Instance.IsPaused() || _gameIsEnd) return;
+        
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.Q))
+        {
+            lineColliderA.SetActive(true);
+            StartCoroutine(DeactivateLineCollider(lineColliderA));
+        }
+        if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.W))
+        {
+            lineColliderZ.SetActive(true);
+            StartCoroutine(DeactivateLineCollider(lineColliderZ));
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            lineColliderE.SetActive(true);
+            StartCoroutine(DeactivateLineCollider(lineColliderE));
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            lineColliderR.SetActive(true);
+            StartCoroutine(DeactivateLineCollider(lineColliderR));
+        }
+        
+        if(!_isVanish)
+        {
+            if (_timeRemaining > 0)
+            {
+                _timeRemaining -= Time.deltaTime;
+            }
+            else
+            {
+                _isVanish = true;
+                ATMPro.gameObject.SetActive(false);
+                ZTMPro.gameObject.SetActive(false);
+                ETMPro.gameObject.SetActive(false);
+                RTMPro.gameObject.SetActive(false);
             }
         }
 
-        public float BestScore
+        //Multiplicateur de vitesse
+        // int volumePercent = PlayerPrefs.GetInt("volumeSliderPercent");
+        if (PlayerPrefs.GetInt("volumeSliderPercent") == 100)
         {
-            get => PlayerPrefs.GetFloat("BEST_SCORE", 0);
-            set => PlayerPrefs.SetFloat("BEST_SCORE", value);
+            GlitchIsActivate = true;
+            _delayGlitchBonus = 1.2f;
+        }
+        /// A MODIFIER SELON LA VITESSE DE BASE DE LA MUSIQUE
+        /*multiplicateurVitesse = 1f;
+        if (volumePercent > 80)
+        {
+            multiplicateurVitesse = 1f + ((20f - (float)volumePercent) * 2) / 100;   // Compris entre 0 et 1
         }
 
-        private void IncrementScore(float increment)
+        Debug.Log("Multiplicateur : " + multiplicateurVitesse);*/
+    }
+    
+    public void IncreaseScore()
+    {
+        _score++;
+        scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = _score.ToString();
+    }
+
+    public void DecreaseHp()
+    {
+        _nbLives--;
+        if(_nbLives > 0)
         {
-            SetScore(m_Score + increment);
-        }
+            lives.transform.GetChild(_nbLives).gameObject.SetActive(false);
+        } else GameOver();
+    }
 
-        private void SetScore(float score, bool raiseEvent = true)
-        {
-            Score = score;
+    private IEnumerator DeactivateLineCollider(GameObject line)
+    {
+        yield return new WaitForSeconds(0.05f);
+        line.SetActive(false);
+    }
+    
+    void Victory()
+    {
+        _gameIsEnd = true;
+        SceneManager.LoadScene("VictoryScene", LoadSceneMode.Single);
+    }
 
-            if (raiseEvent)
-                EventManager.Instance.Raise(new GameStatisticsChangedEvent
-                    { eBestScore = BestScore, eScore = m_Score, eNLives = NLives });
-        }
-
-        #endregion
-
-
-        #region Events' subscription
-
-        public override void SubscribeEvents()
-        {
-            base.SubscribeEvents();
-
-            //MainMenuManager
-            EventManager.Instance.AddListener<MainMenuButtonClickedEvent>(MainMenuButtonClicked);
-            EventManager.Instance.AddListener<PlayButtonClickedEvent>(PlayButtonClicked);
-            EventManager.Instance.AddListener<ResumeButtonClickedEvent>(ResumeButtonClicked);
-            EventManager.Instance.AddListener<EscapeButtonClickedEvent>(EscapeButtonClicked);
-            EventManager.Instance.AddListener<QuitButtonClickedEvent>(QuitButtonClicked);
-
-            //Score Item
-            EventManager.Instance.AddListener<ScoreItemEvent>(ScoreHasBeenGained);
-        }
-
-        public override void UnsubscribeEvents()
-        {
-            base.UnsubscribeEvents();
-
-            //MainMenuManager
-            EventManager.Instance.RemoveListener<MainMenuButtonClickedEvent>(MainMenuButtonClicked);
-            EventManager.Instance.RemoveListener<PlayButtonClickedEvent>(PlayButtonClicked);
-            EventManager.Instance.RemoveListener<ResumeButtonClickedEvent>(ResumeButtonClicked);
-            EventManager.Instance.RemoveListener<EscapeButtonClickedEvent>(EscapeButtonClicked);
-            EventManager.Instance.RemoveListener<QuitButtonClickedEvent>(QuitButtonClicked);
-
-            //Score Item
-            EventManager.Instance.RemoveListener<ScoreItemEvent>(ScoreHasBeenGained);
-        }
-
-        #endregion
-
-        #region Callbacks to Events issued by MenuManager
-
-        private void MainMenuButtonClicked(MainMenuButtonClickedEvent e)
-        {
-            Menu();
-        }
-
-        private void PlayButtonClicked(PlayButtonClickedEvent e)
-        {
-            Play();
-        }
-
-        private void ResumeButtonClicked(ResumeButtonClickedEvent e)
-        {
-            Resume();
-        }
-
-        private void EscapeButtonClicked(EscapeButtonClickedEvent e)
-        {
-            if (IsPlaying) Pause();
-        }
-
-        private void QuitButtonClicked(QuitButtonClickedEvent e)
-        {
-            Application.Quit();
-        }
-
-        #endregion
-
-        #region GameState methods
-
-        private void Menu()
-        {
-            SetTimeScale(1);
-            m_GameState = GameState.gameMenu;
-            if (MusicLoopsManager.Instance) MusicLoopsManager.Instance.PlayMusic(Constants.MENU_MUSIC);
-            EventManager.Instance.Raise(new GameMenuEvent());
-        }
-
-        private void Play()
-        {
-            InitNewGame();
-            SetTimeScale(1);
-            m_GameState = GameState.gamePlay;
-
-            if (MusicLoopsManager.Instance) MusicLoopsManager.Instance.PlayMusic(Constants.GAMEPLAY_MUSIC);
-            EventManager.Instance.Raise(new GamePlayEvent());
-        }
-
-        private void Pause()
-        {
-            if (!IsPlaying) return;
-
-            SetTimeScale(0);
-            m_GameState = GameState.gamePause;
-            EventManager.Instance.Raise(new GamePauseEvent());
-        }
-
-        private void Resume()
-        {
-            if (IsPlaying) return;
-
-            SetTimeScale(1);
-            m_GameState = GameState.gamePlay;
-            EventManager.Instance.Raise(new GameResumeEvent());
-        }
-
-        private void Over()
-        {
-            SetTimeScale(0);
-            m_GameState = GameState.gameOver;
-            EventManager.Instance.Raise(new GameOverEvent());
-            if (SfxManager.Instance) SfxManager.Instance.PlaySfx2D(Constants.GAMEOVER_SFX);
-        }
-
-        #endregion
+    void GameOver()
+    {
+        _gameIsEnd = true;
+        SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
     }
 }
