@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Space))
         {
             if(!PauseMenuUI.Instance.IsPaused())
             {
@@ -170,21 +170,11 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //Multiplicateur de vitesse
-        // int volumePercent = PlayerPrefs.GetInt("volumeSliderPercent");
         if (PlayerPrefs.GetInt("volumeSliderPercent") == 100)
         {
             GlitchIsActivate = true;
             _delayGlitchBonus = 1.2f;
         }
-        /// A MODIFIER SELON LA VITESSE DE BASE DE LA MUSIQUE
-        /*multiplicateurVitesse = 1f;
-        if (volumePercent > 80)
-        {
-            multiplicateurVitesse = 1f + ((20f - (float)volumePercent) * 2) / 100;   // Compris entre 0 et 1
-        }
-
-        Debug.Log("Multiplicateur : " + multiplicateurVitesse);*/
     }
     
     public void IncreaseScore()
@@ -196,10 +186,10 @@ public class GameManager : MonoBehaviour
     public void DecreaseHp()
     {
         _nbLives--;
-        if(_nbLives > 0)
-        {
+        if(_nbLives >= 0)
             lives.transform.GetChild(_nbLives).gameObject.SetActive(false);
-        } else GameOver();
+        if (_nbLives <= 0)
+            GameOver();
     }
 
     private IEnumerator DeactivateLineCollider(GameObject line)
@@ -218,5 +208,10 @@ public class GameManager : MonoBehaviour
     {
         _gameIsEnd = true;
         SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
+    }
+
+    public int GetScore()
+    {
+        return _score;
     }
 }

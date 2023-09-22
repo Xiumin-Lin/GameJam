@@ -454,11 +454,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3948670804957758667, guid: 8ade26adac0f1c94198dde876210b697, type: 3}
       propertyPath: m_Value
-      value: -3
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3948670804957758667, guid: 8ade26adac0f1c94198dde876210b697, type: 3}
+      propertyPath: m_MaxValue
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 3948670804957758667, guid: 8ade26adac0f1c94198dde876210b697, type: 3}
       propertyPath: m_MinValue
-      value: -30
+      value: -80
       objectReference: {fileID: 0}
     - target: {fileID: 5960641934602981846, guid: 8ade26adac0f1c94198dde876210b697, type: 3}
       propertyPath: m_AnchorMax.x

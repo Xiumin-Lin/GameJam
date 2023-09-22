@@ -15,7 +15,7 @@ public class EndGame : MonoBehaviour
         playAgainButton.onClick.AddListener(PlayAgainScene);
         mainMenuButton.onClick.AddListener(MainMenuScene);
 
-        scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = GameManagerTest.instance.GetScore().ToString();
+        scoreTMPro.GetComponent<TMPro.TextMeshProUGUI>().text = GameManager.Instance.GetScore().ToString();
     }
 
     // Start is called before the first frame update
